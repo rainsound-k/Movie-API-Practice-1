@@ -1,23 +1,11 @@
-from rest_framework import serializers
+from rest_framework import serializers, exceptions
 
 from .models import Genre, Torrent, Movie
 
 __all__ = (
-    'GenreSerializer',
     'TorrentSerializer',
     'MovieSerializer',
 )
-
-
-class GenreSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Genre
-        fields = (
-            'name',
-        )
-
-    def to_representation(self, obj):
-        return obj.name
 
 
 class TorrentSerializer(serializers.ModelSerializer):
@@ -37,8 +25,8 @@ class TorrentSerializer(serializers.ModelSerializer):
 
 
 class MovieSerializer(serializers.ModelSerializer):
-    genres = GenreSerializer(many=True, required=True)
-    torrents = TorrentSerializer(read_only=True, many=True)
+    genres = serializers.SlugRelatedField(many=True, slug_field='name', queryset=Genre.objects.all(), required=True)
+    torrents = TorrentSerializer(many=True, required=False)
 
     class Meta:
         model = Movie
@@ -70,3 +58,39 @@ class MovieSerializer(serializers.ModelSerializer):
             'date_uploaded',
             'date_uploaded_unix',
         )
+
+    def create(self, validated_data):
+        genres = validated_data.pop('genres', '')
+        torrents = validated_data.pop('torrents', '')
+
+        instance = Movie.objects.create(**validated_data)
+        if not genres:
+            error = {
+                'genres': [
+                    'This field is required.'
+                ]
+            }
+            raise exceptions.ValidationError(error)
+
+        else:
+            genres_list = list(genres)
+            for j in range(0, len(genres_list)):
+                genre = Genre.objects.get(name=genres_list[j])
+                instance.genres.add(genre)
+
+        if torrents:
+            torrents_list = list(torrents)
+            for k in range(0, len(torrents_list)):
+                torrent = Torrent.objects.create(
+                    url=torrents_list[k].json().get('url', None),
+                    hash=torrents_list[k].json().get('hash', None),
+                    quality=torrents_list[k].json().get('quality', None),
+                    seeds=torrents_list[k].json().get('seeds', None),
+                    peers=torrents_list[k].json().get('peers', None),
+                    size=torrents_list[k].json().get('size', None),
+                    size_bytes=torrents_list[k].json().get('size_bytes', None),
+                    date_uploaded=torrents_list[k].json().get('date_uploaded', None),
+                    date_uploaded_unix=torrents_list[k].json().get('date_uploaded_unix', None),
+                )
+                instance.torrents.add(torrent)
+        return instance

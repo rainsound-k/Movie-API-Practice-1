@@ -11,64 +11,72 @@ from movies.models import Genre, Torrent, Movie
 
 def get_movie(total_page_num):
     url = 'https://yts.am/api/v2/list_movies.json'
+    total_genres_list = [
+        'Comedy', 'Drama', 'Short', 'Family', 'Romance', 'Talk-Show', 'Animation', 'Music', 'Fantasy', 'Action',
+        'Adventure', 'Sci-Fi', 'Crime', 'Game-Show', 'News', 'Musical', 'Mystery', 'Horror', 'Reality-TV', 'Thriller',
+        'Documentary', 'Sport', 'History', 'Western', 'Biography', 'War', 'Adult'
+    ]
+    for i in range(len(total_genres_list)):
+        if not Genre.objects.filter(name=total_genres_list[i]):
+            Genre.objects.create(name=total_genres_list[i])
+
     for page_num in range(1, total_page_num + 1):
         params = {
             'page': page_num,
         }
         response = requests.get(url, params)
         response_dict = response.json()
-        movies_list = response_dict['data'].get('movies', '')
+        movies_list = response_dict['data'].get('movies', None)
 
         if movies_list:
-            for i in range(len(movies_list)):
+            for j in range(len(movies_list)):
                 movie = Movie.objects.create(
-                    url=movies_list[i].get('url', ''),
-                    imdb_code=movies_list[i].get('imdb_code', ''),
-                    title=movies_list[i].get('title', ''),
-                    title_english=movies_list[i].get('title_english', ''),
-                    title_long=movies_list[i].get('title_long', ''),
-                    slug=movies_list[i].get('slug', ''),
-                    year=movies_list[i].get('year', ''),
-                    rating=movies_list[i].get('rating', ''),
-                    runtime=movies_list[i].get('runtime', ''),
-                    summary=movies_list[i].get('summary', ''),
-                    description_full=movies_list[i].get('description_full', ''),
-                    synopsis=movies_list[i].get('synopsis', ''),
-                    yt_trailer_code=movies_list[i].get('yt_trailer_code', ''),
-                    language=movies_list[i].get('language', ''),
-                    mpa_rating=movies_list[i].get('mpa_rating', ''),
-                    background_image=movies_list[i].get('background_image', ''),
-                    background_image_original=movies_list[i].get('background_image_original', ''),
-                    small_cover_image=movies_list[i].get('small_cover_image', ''),
-                    medium_cover_image=movies_list[i].get('medium_cover_image', ''),
-                    large_cover_image=movies_list[i].get('large_cover_image', ''),
-                    state=movies_list[i].get('state', ''),
-                    date_uploaded=movies_list[i].get('date_uploaded', ''),
-                    date_uploaded_unix=movies_list[i].get('date_uploaded_unix', ''),
+                    url=movies_list[j].get('url', None),
+                    imdb_code=movies_list[j].get('imdb_code', None),
+                    title=movies_list[j].get('title', None),
+                    title_english=movies_list[j].get('title_english', None),
+                    title_long=movies_list[j].get('title_long', None),
+                    slug=movies_list[j].get('slug', None),
+                    year=movies_list[j].get('year', None),
+                    rating=movies_list[j].get('rating', None),
+                    runtime=movies_list[j].get('runtime', None),
+                    summary=movies_list[j].get('summary', None),
+                    description_full=movies_list[j].get('description_full', None),
+                    synopsis=movies_list[j].get('synopsis', None),
+                    yt_trailer_code=movies_list[j].get('yt_trailer_code', None),
+                    language=movies_list[j].get('language', None),
+                    mpa_rating=movies_list[j].get('mpa_rating', None),
+                    background_image=movies_list[j].get('background_image', None),
+                    background_image_original=movies_list[j].get('background_image_original', None),
+                    small_cover_image=movies_list[j].get('small_cover_image', None),
+                    medium_cover_image=movies_list[j].get('medium_cover_image', None),
+                    large_cover_image=movies_list[j].get('large_cover_image', None),
+                    state=movies_list[j].get('state', None),
+                    date_uploaded=movies_list[j].get('date_uploaded', None),
+                    date_uploaded_unix=movies_list[j].get('date_uploaded_unix', None),
                 )
-                genres_list = movies_list[i].get('genres', '')
+                genres_list = movies_list[j].get('genres', None)
                 if genres_list:
-                    for j in range(0, len(genres_list)):
-                        if Genre.objects.filter(name=genres_list[j]):
-                            genre = Genre.objects.get(name=genres_list[j])
+                    for k in range(0, len(genres_list)):
+                        if Genre.objects.filter(name=genres_list[k]):
+                            genre = Genre.objects.get(name=genres_list[k])
                         else:
-                            genre = Genre.objects.create(name=genres_list[j])
-
+                            genre = Genre.objects.create(name=genres_list[k])
                         movie.genres.add(genre)
 
-                torrents_list = movies_list[i].get('torrents', '')
+                torrents_list = movies_list[j].get('torrents', None)
                 if torrents_list:
-                    for k in range(0, len(torrents_list)):
+                    for l in range(0, len(torrents_list)):
                         torrent = Torrent.objects.create(
-                            url=torrents_list[k].get('url', ''),
-                            hash=torrents_list[k].get('hash', ''),
-                            quality=torrents_list[k].get('quality', ''),
-                            seeds=torrents_list[k].get('seeds', ''),
-                            peers=torrents_list[k].get('peers', ''),
-                            size=torrents_list[k].get('size', ''),
-                            size_bytes=torrents_list[k].get('size_bytes', ''),
-                            date_uploaded=torrents_list[k].get('date_uploaded', ''),
-                            date_uploaded_unix=torrents_list[k].get('date_uploaded_unix', ''),
+                            url=torrents_list[l].get('url', None),
+                            hash=torrents_list[l].get('hash', None),
+                            quality=torrents_list[l].get('quality', None),
+                            seeds=torrents_list[l].get('seeds', None),
+                            peers=torrents_list[l].get('peers', None),
+                            size=torrents_list[l].get('size', None),
+                            size_bytes=torrents_list[l].get('size_bytes', None),
+                            date_uploaded=torrents_list[l].get('date_uploaded', None),
+                            date_uploaded_unix=torrents_list[l].get('date_uploaded_unix', None),
                         )
                         movie.torrents.add(torrent)
 
