@@ -33,7 +33,7 @@ class Movie(models.Model):
     year = models.PositiveIntegerField()
     rating = models.FloatField()
     runtime = models.PositiveIntegerField(blank=True, null=True)
-    genres = models.ManyToManyField(Genre)
+    genres = models.ManyToManyField(Genre, blank=True)
     summary = models.CharField(max_length=500, )
     description_full = models.CharField(max_length=500, blank=True)
     synopsis = models.CharField(max_length=500, blank=True)
