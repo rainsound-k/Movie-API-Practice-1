@@ -21,11 +21,6 @@ class GenreSerializer(serializers.ModelSerializer):
 
 
 class TorrentSerializer(serializers.ModelSerializer):
-    seeds = serializers.IntegerField(allow_null=True)
-    peers = serializers.IntegerField(allow_null=True)
-    size_bytes = serializers.IntegerField(allow_null=True)
-    date_uploaded_unix = serializers.IntegerField(allow_null=True)
-
     class Meta:
         model = Torrent
         fields = (
@@ -42,12 +37,8 @@ class TorrentSerializer(serializers.ModelSerializer):
 
 
 class MovieSerializer(serializers.ModelSerializer):
-    year = serializers.IntegerField()
-    runtime = serializers.IntegerField(allow_null=True)
-    genres = GenreSerializer(read_only=True, many=True)
+    genres = GenreSerializer(many=True, required=True)
     torrents = TorrentSerializer(read_only=True, many=True)
-    date_uploaded = serializers.DateTimeField(allow_null=True)
-    date_uploaded_unix = serializers.IntegerField(allow_null=True)
 
     class Meta:
         model = Movie

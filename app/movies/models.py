@@ -24,7 +24,7 @@ class Torrent(models.Model):
 
 
 class Movie(models.Model):
-    url = models.URLField()
+    url = models.URLField(blank=True)
     imdb_code = models.CharField(max_length=100, blank=True)
     title = models.CharField(max_length=200)
     title_english = models.CharField(max_length=200, blank=True)
@@ -34,7 +34,7 @@ class Movie(models.Model):
     rating = models.FloatField()
     runtime = models.PositiveIntegerField(blank=True, null=True)
     genres = models.ManyToManyField(Genre, blank=True)
-    summary = models.CharField(max_length=500, )
+    summary = models.CharField(max_length=500)
     description_full = models.CharField(max_length=500, blank=True)
     synopsis = models.CharField(max_length=500, blank=True)
     yt_trailer_code = models.CharField(max_length=100, blank=True)
